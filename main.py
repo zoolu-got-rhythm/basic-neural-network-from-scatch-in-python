@@ -29,6 +29,7 @@ class NeuralNetwork:
         self.weights2 = np.random.rand(4,1)
         self.y = y
         self.layer2_output = np.zeros(self.y.shape) # layer 2 output will be final output/result/prediction
+        self.loss_history = list()
 
     # should be private?
     def feed_forward(self, x):
@@ -56,6 +57,8 @@ class NeuralNetwork:
         for i in range(n_of_epochs):
             self.feed_forward(self.input)
             self.back_propagation()
+            loss = np.mean(np.square(self.y - self.predict(self.input)))
+            self.loss_history.append(loss)
 
     # public method
     def predict(self, x):
@@ -63,17 +66,24 @@ class NeuralNetwork:
         return self.feed_forward(x)
 
 
+n_of_epochs = 1500
 NN = NeuralNetwork(X_train, y_train)
-for i in range(10):
-    # mean sum squared loss
-    loss = np.mean(np.square(y_train - NN.predict(X_train)))
-    print("loss for epoch: " + str(i * 100))
-    print(str(loss))
-    NN.fit(100)
+NN.fit(n_of_epochs)
+print("loss for epoch: " + str(n_of_epochs))
+print(str(NN.loss_history[-1]))
 
 # could put output layer results into a softmax function instead of sigmoid? to produce whole number labels?
 print(NN.predict(np.array([0,0,1])))
 print(NN.predict(np.array([0,1,1])))
+
+import matplotlib.pyplot as plt
+
+plt.plot(NN.loss_history)
+plt.title('loss per iteration')
+plt.ylabel('loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
 
 
 
